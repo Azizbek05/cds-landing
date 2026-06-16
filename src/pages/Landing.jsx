@@ -22,7 +22,7 @@ export default function Landing() {
   }
 
   const handleSubmit = async () => {
-    if (!form.full_name && !form.phone) {
+    if (!form.full_name && form.phone === '+998') {
       setError("Ma'lumotlaringizni qoldiring!")
       return
     }
@@ -30,7 +30,7 @@ export default function Landing() {
       setError("Birinchi ismingizni to'ldiring!")
       return
     }
-    if (!form.phone) {
+    if (!form.phone || form.phone === '+998') {
       setError("Telefon raqamingizni qoldiring!")
       return
     }
@@ -140,11 +140,9 @@ export default function Landing() {
                   placeholder="Ismingiz"
                   value={form.full_name}
                   onChange={e => {
-  const val = e.target.value
-  if (!val.startsWith('+998')) return
-  setForm({ ...form, phone: val })
-  setError('')
-}}
+                    setForm({ ...form, full_name: e.target.value })
+                    setError('')
+                  }}
                   style={{
                     background: 'rgba(255,255,255,0.05)',
                     border: `0.5px solid ${!form.full_name && error ? 'rgba(255,100,100,0.5)' : 'rgba(255,255,255,0.1)'}`,
@@ -155,10 +153,15 @@ export default function Landing() {
                   type="tel"
                   placeholder="+998 90 000 00 00"
                   value={form.phone}
-                  onChange={e => { setForm({ ...form, phone: e.target.value }); setError('') }}
+                  onChange={e => {
+                    const val = e.target.value
+                    if (!val.startsWith('+998')) return
+                    setForm({ ...form, phone: val })
+                    setError('')
+                  }}
                   style={{
                     background: 'rgba(255,255,255,0.05)',
-                    border: `0.5px solid ${!form.phone && error ? 'rgba(255,100,100,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    border: `0.5px solid ${form.phone === '+998' && error ? 'rgba(255,100,100,0.5)' : 'rgba(255,255,255,0.1)'}`,
                     borderRadius: '10px', padding: '14px 16px', color: '#fff', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box'
                   }}
                 />
