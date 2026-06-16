@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 
 export default function Landing() {
   const [settings, setSettings] = useState({})
-  const [form, setForm] = useState({ full_name: '', phone: '' })
+  const [form, setForm] = useState({ full_name: '', phone: '+998' })
   const [loading, setLoading] = useState(true)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -139,7 +139,12 @@ export default function Landing() {
                   type="text"
                   placeholder="Ismingiz"
                   value={form.full_name}
-                  onChange={e => { setForm({ ...form, full_name: e.target.value }); setError('') }}
+                  onChange={e => {
+  const val = e.target.value
+  if (!val.startsWith('+998')) return
+  setForm({ ...form, phone: val })
+  setError('')
+}}
                   style={{
                     background: 'rgba(255,255,255,0.05)',
                     border: `0.5px solid ${!form.full_name && error ? 'rgba(255,100,100,0.5)' : 'rgba(255,255,255,0.1)'}`,
