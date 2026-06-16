@@ -7,6 +7,7 @@ export default function Landing() {
   const [loading, setLoading] = useState(true)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     loadSettings()
@@ -21,7 +22,19 @@ export default function Landing() {
   }
 
   const handleSubmit = async () => {
-    if (!form.full_name || !form.phone) return
+    if (!form.full_name && !form.phone) {
+      setError("Ma'lumotlaringizni qoldiring!")
+      return
+    }
+    if (!form.full_name) {
+      setError("Birinchi ismingizni to'ldiring!")
+      return
+    }
+    if (!form.phone) {
+      setError("Telefon raqamingizni qoldiring!")
+      return
+    }
+    setError('')
     setSubmitting(true)
 
     const { data: channels } = await supabase
@@ -126,21 +139,36 @@ export default function Landing() {
                   type="text"
                   placeholder="Ismingiz"
                   value={form.full_name}
-                  onChange={e => setForm({ ...form, full_name: e.target.value })}
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '14px 16px', color: '#fff', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                  onChange={e => { setForm({ ...form, full_name: e.target.value }); setError('') }}
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: `0.5px solid ${!form.full_name && error ? 'rgba(255,100,100,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    borderRadius: '10px', padding: '14px 16px', color: '#fff', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box'
+                  }}
                 />
                 <input
                   type="tel"
                   placeholder="+998 90 000 00 00"
                   value={form.phone}
-                  onChange={e => setForm({ ...form, phone: e.target.value })}
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '14px 16px', color: '#fff', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                  onChange={e => { setForm({ ...form, phone: e.target.value }); setError('') }}
+                  style={{
+                    background: 'rgba(255,255,255,0.05)',
+                    border: `0.5px solid ${!form.phone && error ? 'rgba(255,100,100,0.5)' : 'rgba(255,255,255,0.1)'}`,
+                    borderRadius: '10px', padding: '14px 16px', color: '#fff', fontSize: '14px', outline: 'none', width: '100%', boxSizing: 'border-box'
+                  }}
                 />
+
+                {error && (
+                  <div style={{ background: 'rgba(255,80,80,0.1)', border: '0.5px solid rgba(255,80,80,0.25)', borderRadius: '8px', padding: '10px 14px', color: '#ff8080', fontSize: '13px', textAlign: 'center' }}>
+                    ⚠️ {error}
+                  </div>
+                )}
+
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
                   style={{ background: primary, border: 'none', borderRadius: '10px', padding: '15px', color: bg, fontSize: '14px', fontWeight: '500', cursor: 'pointer', opacity: submitting ? 0.7 : 1 }}>
-                  {submitting ? 'Yuborilmoqda...' : settings.cta_button + ' →'}
+                  {submitting ? 'Yuborilmoqda...' : (settings.cta_button || "Ro'yxatdan o'tish") + ' →'}
                 </button>
                 <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '11px', margin: '0', textAlign: 'center' }}>Spam yubormaymiz. Ma'lumotlaringiz xavfsiz.</p>
               </div>
@@ -149,8 +177,6 @@ export default function Landing() {
 
           {/* Right */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-
-            {/* PDF card */}
             <div style={{ background: 'rgba(255,255,255,0.03)', border: `0.5px solid ${primary}25`, borderRadius: '14px', padding: '16px', display: 'flex', alignItems: 'center', gap: '14px' }}>
               {settings.hero_image ? (
                 <img src={settings.hero_image} alt="bonus" style={{ width: '56px', height: '70px', objectFit: 'cover', borderRadius: '6px', flexShrink: 0 }} />
@@ -167,7 +193,6 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Student result */}
             <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: `${primary}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>👨‍💻</div>
               <div style={{ flex: 1 }}>
@@ -180,7 +205,6 @@ export default function Landing() {
               </div>
             </div>
 
-            {/* Stats */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
               {[
                 { num: settings.stat1_number, label: settings.stat1_label },
