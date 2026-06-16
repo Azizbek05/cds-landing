@@ -37,36 +37,36 @@ export default function Landing() {
     setError('')
     setSubmitting(true)
 
-    const { data: channels } = await supabase
+    const { data: channel } = await supabase
       .from('channels').select('id').eq('name', 'Landing Page').single()
 
-    const { data: pipelines } = await supabase
+    const { data: pipeline } = await supabase
       .from('pipelines').select('id').order('created_at').limit(1).single()
 
-    const { data: stages } = await supabase
+    const { data: stage } = await supabase
       .from('pipeline_stages').select('id')
-      .eq('pipeline_id', pipelines?.id)
+      .eq('pipeline_id', pipeline?.id)
       .eq('name', 'Yangi lid').single()
 
     await supabase.from('leads').insert([{
       full_name: form.full_name,
       phone: form.phone,
       heat: 'cold',
-      channel_id: channels?.id || null,
-      pipeline_id: pipelines?.id || null,
-      stage_id: stages?.id || null,
+      channel_id: channel?.id || null,
+      pipeline_id: pipeline?.id || null,
+      stage_id: stage?.id || null,
     }])
 
-    fetch('https://cds-crm-backend-production.up.railway.app/api/webhook/google-form', {
+    // Super Admin ga Telegram xabar
+    fetch('https://cds-crm-backend-production.up.railway.app/api/notify-lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        full_name: form.full_name,
-        phone: form.phone,
-        heat: 'cold',
-        channel_id: channels?.id,
-        pipeline_id: pipelines?.id,
-        stage_id: stages?.id,
+        lead: {
+          full_name: form.full_name,
+          phone: form.phone,
+          manager_id: null
+        }
       })
     }).catch(() => {})
 
