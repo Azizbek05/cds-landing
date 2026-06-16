@@ -38,7 +38,7 @@ export default function Landing() {
     setSubmitting(true)
 
     const { data: channels } = await supabase
-      .from('channels').select('id').eq('name', 'Google Form').single()
+      .from('channels').select('id').eq('name', 'Landing Page').single()
 
     const { data: pipelines } = await supabase
       .from('pipelines').select('id').order('created_at').limit(1).single()
