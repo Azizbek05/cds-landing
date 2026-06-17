@@ -48,27 +48,23 @@ export default function Landing() {
       .eq('pipeline_id', pipeline?.id)
       .eq('name', 'Yangi lid').single()
 
-    await supabase.from('leads').insert([{
+    const { data: newLead } = await supabase.from('leads').insert([{
       full_name: form.full_name,
       phone: form.phone,
       heat: 'cold',
       channel_id: channel?.id || null,
       pipeline_id: pipeline?.id || null,
       stage_id: stage?.id || null,
-    }])
+    }]).select().single()
 
-    // Super Admin ga Telegram xabar
-    fetch('https://cds-crm-backend-production.up.railway.app/api/notify-lead', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        lead: {
-          full_name: form.full_name,
-          phone: form.phone,
-          manager_id: null
-        }
-      })
-    }).catch(() => {})
+    // Avtomatik menejerga biriktirish
+    if (newLead?.id) {
+      fetch('https://cds-crm-backend-production.up.railway.app/api/auto-assign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId: newLead.id })
+      }).catch(() => {})
+    }
 
     setSubmitted(true)
     setSubmitting(false)
