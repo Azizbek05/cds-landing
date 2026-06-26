@@ -104,10 +104,10 @@ export default function Landing() {
             zIndex: 0
           }} />
           <div style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: `rgba(11,25,41,${bgOverlay})`,
-            zIndex: 1
-          }} />
+  position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+  background: `linear-gradient(135deg, rgba(11,25,41,${bgOverlay}), rgba(13,31,60,${bgOverlay}))`,
+  zIndex: 1
+}} />
         </>
       )}
 
