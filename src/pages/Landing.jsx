@@ -83,21 +83,14 @@ export default function Landing() {
   const bgImage = settings.bg_image
   const bgOverlay = settings.bg_overlay || '0.6'
 
-  const pageStyle = bgImage ? {
-    position: 'relative',
-    minHeight: '100vh',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    color: '#fff',
-    overflow: 'hidden',
-  } : {
-    background: bg,
-    minHeight: '100vh',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-    color: '#fff',
-  }
-
   return (
-    <div style={pageStyle}>
+    <div style={{
+      position: 'relative',
+      minHeight: '100vh',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      color: '#fff',
+      background: bgImage ? 'transparent' : bg,
+    }}>
 
       {/* Fon rasm */}
       {bgImage && (
@@ -118,6 +111,14 @@ export default function Landing() {
         </>
       )}
 
+      {/* Fon yo'q bo'lsa oddiy bg */}
+      {!bgImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: bg, zIndex: 0
+        }} />
+      )}
+
       {/* Sahifa kontent */}
       <div style={{ position: 'relative', zIndex: 2 }}>
 
@@ -127,15 +128,23 @@ export default function Landing() {
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           borderBottom: '0.5px solid rgba(255,255,255,0.08)',
           backdropFilter: 'blur(10px)',
-          background: 'rgba(11,25,41,0.7)',
+          background: 'rgba(11,25,41,0.75)',
           position: 'sticky', top: 0, zIndex: 10
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{
-              width: '30px', height: '30px', background: primary,
-              borderRadius: '8px', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', fontWeight: '700', fontSize: '13px', color: '#fff'
-            }}>C</div>
+            {settings.logo_url ? (
+              <img
+                src={settings.logo_url}
+                alt="CDS Logo"
+                style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+              />
+            ) : (
+              <div style={{
+                width: '30px', height: '30px', background: primary,
+                borderRadius: '8px', display: 'flex', alignItems: 'center',
+                justifyContent: 'center', fontWeight: '700', fontSize: '13px', color: '#fff'
+              }}>C</div>
+            )}
             <span style={{ fontSize: '14px', fontWeight: '500' }}>Creator Digital School</span>
           </div>
           <a href={settings.telegram_channel} target="_blank" rel="noreferrer"
@@ -163,7 +172,7 @@ export default function Landing() {
             {/* Chap — forma */}
             <div>
 
-              {/* Video kartochka — bosh qism */}
+              {/* Video kartochka */}
               <div style={{
                 background: 'rgba(13,37,69,0.85)',
                 border: '0.8px solid rgba(30,136,229,0.35)',
@@ -182,24 +191,49 @@ export default function Landing() {
                   position: 'absolute', left: 0, top: 0, bottom: 0,
                   width: '3px', background: primary, borderRadius: '14px 0 0 14px'
                 }} />
-                {/* Play tugma */}
-                <div style={{
-                  width: '52px', height: '52px', borderRadius: '50%',
-                  background: 'rgba(30,136,229,0.2)',
-                  border: '1.5px solid rgba(30,136,229,0.5)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  flexShrink: 0, cursor: 'pointer'
-                }}>
+
+                {/* Thumbnail yoki Play tugma */}
+                {settings.hero_image ? (
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <img
+                      src={settings.hero_image}
+                      alt="video"
+                      style={{ width: '72px', height: '54px', objectFit: 'cover', borderRadius: '8px', display: 'block' }}
+                    />
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'rgba(0,0,0,0.3)', borderRadius: '8px'
+                    }}>
+                      <div style={{
+                        width: 0, height: 0,
+                        borderTop: '7px solid transparent',
+                        borderBottom: '7px solid transparent',
+                        borderLeft: '12px solid white',
+                        marginLeft: '3px'
+                      }} />
+                    </div>
+                  </div>
+                ) : (
                   <div style={{
-                    width: 0, height: 0,
-                    borderTop: '9px solid transparent',
-                    borderBottom: '9px solid transparent',
-                    borderLeft: `16px solid ${primary}`,
-                    marginLeft: '4px'
-                  }} />
-                </div>
+                    width: '52px', height: '52px', borderRadius: '50%',
+                    background: 'rgba(30,136,229,0.2)',
+                    border: '1.5px solid rgba(30,136,229,0.5)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <div style={{
+                      width: 0, height: 0,
+                      borderTop: '9px solid transparent',
+                      borderBottom: '9px solid transparent',
+                      borderLeft: `16px solid ${primary}`,
+                      marginLeft: '4px'
+                    }} />
+                  </div>
+                )}
+
                 {/* Matn */}
-                <div style={{ flex: 1 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{
                     display: 'inline-block',
                     background: 'rgba(30,136,229,0.2)',
@@ -210,16 +244,19 @@ export default function Landing() {
                   }}>
                     BEPUL VIDEO DARSLIK
                   </div>
-                  <div style={{ color: '#fff', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}>
-                    {settings.pdf_title || 'Marketing asoslari — 0 dan boshlab'}
+                  <div style={{
+                    color: '#fff', fontSize: '14px', fontWeight: '500',
+                    marginBottom: '4px', lineHeight: '1.3'
+                  }}>
+                    {settings.video_title || settings.pdf_title || 'Marketing asoslari — 0 dan boshlab'}
                   </div>
                   <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '11px' }}>
-                    Ro'yxatdan o'tganingizdan so'ng yuboriladi
+                    {settings.video_description || "Ro'yxatdan o'tganingizdan so'ng yuboriladi"}
                   </div>
                 </div>
               </div>
 
-              {/* Sarlavha */}
+              {/* Badge */}
               <div style={{
                 display: 'inline-flex', alignItems: 'center', gap: '6px',
                 background: 'rgba(30,136,229,0.1)',
@@ -233,6 +270,7 @@ export default function Landing() {
                 </span>
               </div>
 
+              {/* Sarlavha */}
               <h1 style={{
                 fontSize: 'clamp(24px, 5vw, 34px)',
                 fontWeight: '500', lineHeight: '1.2', margin: '0 0 14px'
@@ -241,9 +279,12 @@ export default function Landing() {
                   i >= arr.length - 2
                     ? <span key={i} style={{ color: primaryLight }}>{word} </span>
                     : <span key={i}>{word} </span>
-                ) || <span>Raqamli <span style={{ color: primaryLight }}>marketing mutaxassisi</span> bo'ling</span>}
+                ) || (
+                  <span>Raqamli <span style={{ color: primaryLight }}>marketing mutaxassisi</span> bo'ling</span>
+                )}
               </h1>
 
+              {/* Tavsif */}
               <p style={{
                 color: 'rgba(255,255,255,0.45)', fontSize: '14px',
                 lineHeight: '1.65', margin: '0 0 24px'
@@ -251,6 +292,7 @@ export default function Landing() {
                 {settings.hero_subtitle}
               </p>
 
+              {/* Forma yoki Rahmat */}
               {submitted ? (
                 <div style={{
                   background: 'rgba(30,136,229,0.1)',
@@ -277,8 +319,7 @@ export default function Landing() {
                       border: `0.5px solid ${!form.full_name && error ? 'rgba(255,100,100,0.5)' : 'rgba(255,255,255,0.12)'}`,
                       borderRadius: '10px', padding: '14px 16px',
                       color: '#fff', fontSize: '14px', outline: 'none',
-                      width: '100%', boxSizing: 'border-box',
-                      transition: 'border-color 0.2s'
+                      width: '100%', boxSizing: 'border-box'
                     }}
                   />
                   <input
@@ -316,24 +357,30 @@ export default function Landing() {
                     onClick={handleSubmit}
                     disabled={submitting}
                     style={{
-                      background: submitting ? 'rgba(30,136,229,0.5)' : `linear-gradient(135deg, #1565C0, #1E88E5)`,
+                      background: submitting
+                        ? 'rgba(30,136,229,0.5)'
+                        : 'linear-gradient(135deg, #1565C0, #1E88E5)',
                       border: 'none', borderRadius: '10px',
                       padding: '15px', color: '#fff',
                       fontSize: '15px', fontWeight: '500',
-                      cursor: 'pointer', width: '100%',
-                      transition: 'opacity 0.2s',
-                      letterSpacing: '0.3px'
+                      cursor: submitting ? 'not-allowed' : 'pointer',
+                      width: '100%', letterSpacing: '0.3px'
                     }}>
-                    {submitting ? 'Yuborilmoqda...' : (settings.cta_button || 'Bepul videoni olish') + ' →'}
+                    {submitting
+                      ? 'Yuborilmoqda...'
+                      : (settings.cta_button || 'Bepul videoni olish') + ' →'}
                   </button>
 
                   {/* Social proof */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
-                    <p style={{ color: 'rgba(255,255,255,0.22)', fontSize: '11px', margin: '0', textAlign: 'center' }}>
+                  <div style={{
+                    display: 'flex', alignItems: 'center',
+                    justifyContent: 'center', gap: '12px'
+                  }}>
+                    <p style={{ color: 'rgba(255,255,255,0.22)', fontSize: '11px', margin: 0 }}>
                       Spam yubormaymiz
                     </p>
-                    <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '11px' }}>·</span>
-                    <p style={{ color: primaryLight, fontSize: '11px', margin: '0', opacity: 0.6 }}>
+                    <span style={{ color: 'rgba(255,255,255,0.15)' }}>·</span>
+                    <p style={{ color: primaryLight, fontSize: '11px', margin: 0, opacity: 0.6 }}>
                       500+ kishi oldi
                     </p>
                   </div>
@@ -341,7 +388,7 @@ export default function Landing() {
               )}
             </div>
 
-            {/* O'ng — statistika va o'quvchi */}
+            {/* O'ng — o'quvchi + statistika */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
               {/* O'quvchi natijasi */}
@@ -358,11 +405,11 @@ export default function Landing() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '18px', flexShrink: 0
                 }}>👨‍💻</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '13px', fontWeight: '500' }}>{settings.student_name}</div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: '13px', fontWeight: '500', truncate: true }}>{settings.student_name}</div>
                   <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: '11px' }}>{settings.student_label}</div>
                 </div>
-                <div style={{ textAlign: 'right' }}>
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <div style={{ color: primaryLight, fontSize: '15px', fontWeight: '500' }}>{settings.student_result}</div>
                   <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px' }}>daromad</div>
                 </div>
@@ -401,7 +448,7 @@ export default function Landing() {
         }}>
           {[
             { icon: '🔒', text: settings.trust1 || 'Spam yubormaymiz' },
-            { icon: '⚡', text: settings.trust2 || '24 soat ichida bog\'lanamiz' },
+            { icon: '⚡', text: settings.trust2 || "24 soat ichida bog'lanamiz" },
             { icon: '🎓', text: settings.trust3 || '500+ bitiruvchi' },
           ].map((t, i) => (
             <div key={i} style={{

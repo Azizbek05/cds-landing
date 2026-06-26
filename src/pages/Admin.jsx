@@ -10,8 +10,10 @@ export default function Admin() {
   const [password, setPassword] = useState('')
   const [uploading, setUploading] = useState(false)
   const [uploadingBg, setUploadingBg] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
   const fileRef = useRef()
   const bgFileRef = useRef()
+  const logoRef = useRef()
 
   useEffect(() => {
     const saved = localStorage.getItem('landing_admin')
@@ -52,45 +54,27 @@ export default function Admin() {
     setTimeout(() => setMessage(''), 3000)
   }
 
-  const uploadImage = async (file) => {
-    setUploading(true)
+  const uploadFile = async (file, folder, stateKey, stateSetter) => {
+    stateSetter(true)
     const ext = file.name.split('.').pop()
-    const fileName = `bonus-${Date.now()}.${ext}`
+    const fileName = `${folder}-${Date.now()}.${ext}`
     const { error } = await supabase.storage
       .from('landing-images').upload(fileName, file, { upsert: true })
     if (error) {
-      alert('Rasm yuklashda xato: ' + error.message)
-      setUploading(false)
+      alert('Yuklashda xato: ' + error.message)
+      stateSetter(false)
       return
     }
     const { data: urlData } = supabase.storage.from('landing-images').getPublicUrl(fileName)
-    update('hero_image', urlData.publicUrl)
-    setUploading(false)
-    setMessage('Rasm yuklandi! ✅')
-    setTimeout(() => setMessage(''), 3000)
-  }
-
-  const uploadBgImage = async (file) => {
-    setUploadingBg(true)
-    const ext = file.name.split('.').pop()
-    const fileName = `bg-${Date.now()}.${ext}`
-    const { error } = await supabase.storage
-      .from('landing-images').upload(fileName, file, { upsert: true })
-    if (error) {
-      alert('Rasm yuklashda xato: ' + error.message)
-      setUploadingBg(false)
-      return
-    }
-    const { data: urlData } = supabase.storage.from('landing-images').getPublicUrl(fileName)
-    update('bg_image', urlData.publicUrl)
-    setUploadingBg(false)
-    setMessage('Fon rasmi yuklandi! ✅')
+    update(stateKey, urlData.publicUrl)
+    stateSetter(false)
+    setMessage('Yuklandi! ✅')
     setTimeout(() => setMessage(''), 3000)
   }
 
   if (loading) {
     return (
-      <div style={{ background: '#0A0A0F', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: '#0B1929', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>Yuklanmoqda...</div>
       </div>
     )
@@ -98,9 +82,12 @@ export default function Admin() {
 
   if (!authed) {
     return (
-      <div style={{ background: '#0A0A0F', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif' }}>
+      <div style={{ background: '#0B1929', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'system-ui, sans-serif' }}>
         <div style={{ background: 'rgba(255,255,255,0.04)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '32px', width: '320px' }}>
-          <h2 style={{ color: '#fff', fontSize: '18px', fontWeight: '500', margin: '0 0 24px', textAlign: 'center' }}>Admin Panel</h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '24px', justifyContent: 'center' }}>
+            <div style={{ width: '32px', height: '32px', background: '#1E88E5', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', color: '#fff' }}>C</div>
+            <span style={{ color: '#fff', fontSize: '15px', fontWeight: '500' }}>Admin Panel</span>
+          </div>
           <input
             type="password"
             placeholder="Parol"
@@ -110,7 +97,7 @@ export default function Admin() {
             style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 16px', color: '#fff', fontSize: '14px', outline: 'none', marginBottom: '12px' }}
           />
           <button onClick={login}
-            style={{ width: '100%', background: '#F5A623', border: 'none', borderRadius: '10px', padding: '13px', color: '#0A0A0F', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
+            style={{ width: '100%', background: '#1E88E5', border: 'none', borderRadius: '10px', padding: '13px', color: '#fff', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
             Kirish
           </button>
         </div>
@@ -151,26 +138,30 @@ export default function Admin() {
   )
 
   return (
-    <div style={{ background: '#0A0A0F', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#fff' }}>
+    <div style={{ background: '#0B1929', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#fff' }}>
 
       {/* Header */}
-      <div style={{ padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, background: '#0A0A0F', zIndex: 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '30px', height: '30px', background: '#F5A623', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '600', fontSize: '12px', color: '#0A0A0F' }}>C</div>
+      <div style={{ padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, background: '#0B1929', zIndex: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {settings.logo_url ? (
+            <img src={settings.logo_url} alt="logo" style={{ height: '28px', objectFit: 'contain' }} />
+          ) : (
+            <div style={{ width: '28px', height: '28px', background: '#1E88E5', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '700', fontSize: '12px', color: '#fff' }}>C</div>
+          )}
           <span style={{ fontSize: '14px', fontWeight: '500' }}>Landing Admin Panel</span>
         </div>
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           {message && <span style={{ color: '#4CAF50', fontSize: '13px' }}>{message}</span>}
           <a href="/" target="_blank"
-            style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '8px 14px', color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
+            style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '7px 14px', color: 'rgba(255,255,255,0.6)', fontSize: '13px', textDecoration: 'none' }}>
             Saytni ko'rish →
           </a>
           <button onClick={save} disabled={saving}
-            style={{ background: '#F5A623', border: 'none', borderRadius: '8px', padding: '9px 20px', color: '#0A0A0F', fontSize: '13px', fontWeight: '500', cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
+            style={{ background: '#1E88E5', border: 'none', borderRadius: '8px', padding: '8px 20px', color: '#fff', fontSize: '13px', fontWeight: '500', cursor: 'pointer', opacity: saving ? 0.7 : 1 }}>
             {saving ? 'Saqlanmoqda...' : 'Saqlash'}
           </button>
           <button onClick={() => { setAuthed(false); localStorage.removeItem('landing_admin') }}
-            style={{ background: 'rgba(255,0,0,0.1)', border: '0.5px solid rgba(255,0,0,0.2)', borderRadius: '8px', padding: '8px 14px', color: '#ff6b6b', fontSize: '13px', cursor: 'pointer' }}>
+            style={{ background: 'rgba(255,0,0,0.1)', border: '0.5px solid rgba(255,0,0,0.2)', borderRadius: '8px', padding: '7px 14px', color: '#ff6b6b', fontSize: '13px', cursor: 'pointer' }}>
             Chiqish
           </button>
         </div>
@@ -179,48 +170,45 @@ export default function Admin() {
       {/* Content */}
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '24px' }}>
 
-        <Section title="Asosiy matnlar">
-          <Field label="Sarlavha" keyName="hero_title" />
-          <TextArea label="Tavsif matni" keyName="hero_subtitle" />
-          <Field label="Tugma matni" keyName="cta_button" />
-        </Section>
-
-        <Section title="Bonus / PDF">
-          <Field label="Bonus badge matni" keyName="bonus_text" />
-          <Field label="PDF nomi" keyName="pdf_title" />
-          <Field label="PDF tavsifi" keyName="bonus_description" />
+        {/* Logo */}
+        <Section title="Logo">
           <div style={{ marginBottom: '12px' }}>
-            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>Bonus rasmi</label>
-            {settings.hero_image && (
-              <img src={settings.hero_image} alt="bonus"
-                style={{ width: '80px', height: '100px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', display: 'block' }} />
+            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
+              CDS Logotipi (sarlavha qatorida ko'rinadi)
+            </label>
+            {settings.logo_url && (
+              <img src={settings.logo_url} alt="logo"
+                style={{ height: '48px', maxWidth: '200px', objectFit: 'contain', borderRadius: '8px', marginBottom: '8px', display: 'block', background: 'rgba(255,255,255,0.04)', padding: '8px' }} />
             )}
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <button onClick={() => fileRef.current?.click()}
+              <button onClick={() => logoRef.current?.click()}
                 style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '8px 14px', color: '#fff', fontSize: '13px', cursor: 'pointer' }}>
-                {uploading ? 'Yuklanmoqda...' : '📎 Rasm yuklash'}
+                {uploadingLogo ? 'Yuklanmoqda...' : '🖼️ Logo yuklash'}
               </button>
-              {settings.hero_image && (
-                <button onClick={() => update('hero_image', '')}
+              {settings.logo_url && (
+                <button onClick={() => update('logo_url', '')}
                   style={{ background: 'rgba(255,0,0,0.1)', border: '0.5px solid rgba(255,0,0,0.2)', borderRadius: '8px', padding: '8px 14px', color: '#ff6b6b', fontSize: '13px', cursor: 'pointer' }}>
                   O'chirish
                 </button>
               )}
             </div>
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
-              onChange={e => e.target.files[0] && uploadImage(e.target.files[0])} />
+            <input ref={logoRef} type="file" accept="image/*" style={{ display: 'none' }}
+              onChange={e => e.target.files[0] && uploadFile(e.target.files[0], 'logo', 'logo_url', setUploadingLogo)} />
+            <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '11px', margin: '8px 0 0' }}>
+              Tavsiya: PNG, shaffof fon, 200x60px
+            </p>
           </div>
         </Section>
 
-        {/* Fon rasmi — yangi bo'lim */}
+        {/* Fon rasm */}
         <Section title="Fon rasmi (sizning rasmingiz)">
           <div style={{ marginBottom: '12px' }}>
             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
-              Sahifa foniga qo'yiladigan rasm (professional foto)
+              Professional foto (kesma PNG bo'lsa eng yaxshi)
             </label>
             {settings.bg_image && (
               <img src={settings.bg_image} alt="bg"
-                style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', display: 'block', opacity: 0.7 }} />
+                style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', display: 'block', opacity: 0.8 }} />
             )}
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <button onClick={() => bgFileRef.current?.click()}
@@ -235,33 +223,69 @@ export default function Admin() {
               )}
             </div>
             <input ref={bgFileRef} type="file" accept="image/*" style={{ display: 'none' }}
-              onChange={e => e.target.files[0] && uploadBgImage(e.target.files[0])} />
-            <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: '11px', marginTop: '8px' }}>
-              Tavsiya: professional foto, 1200x800px yoki kattaroq
-            </p>
+              onChange={e => e.target.files[0] && uploadFile(e.target.files[0], 'bg', 'bg_image', setUploadingBg)} />
           </div>
-          <div style={{ marginBottom: '12px' }}>
+          <div>
             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
-              Rasm qoralik darajasi (0 — shaffof, 1 — to'liq qora)
+              Qoralik darajasi: {settings.bg_overlay || '0.6'}
             </label>
             <input
-              type="range" min="0" max="1" step="0.1"
+              type="range" min="0" max="1" step="0.05"
               value={settings.bg_overlay || '0.6'}
               onChange={e => update('bg_overlay', e.target.value)}
               style={{ width: '100%' }}
             />
-            <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
-              {settings.bg_overlay || '0.6'}
-            </span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'rgba(255,255,255,0.2)', fontSize: '11px', marginTop: '4px' }}>
+              <span>Och (0)</span><span>To'q (1)</span>
+            </div>
           </div>
         </Section>
 
+        {/* Asosiy matnlar */}
+        <Section title="Asosiy matnlar">
+          <Field label="Sarlavha" keyName="hero_title" placeholder="Marketing orqali daromad qiling" />
+          <TextArea label="Tavsif matni" keyName="hero_subtitle" />
+          <Field label="CTA tugma matni" keyName="cta_button" placeholder="Bepul videoni olish" />
+          <Field label="Badge matni (tugma ustidagi)" keyName="bonus_text" placeholder="Bepul video darslik" />
+        </Section>
+
+        {/* Video darslik */}
+        <Section title="Bepul video darslik">
+          <Field label="Video nomi" keyName="video_title" placeholder="Marketing asoslari — 0 dan boshlab" />
+          <Field label="Video tavsifi" keyName="video_description" placeholder="Ro'yxatdan o'tganingizdan so'ng yuboriladi" />
+          <div style={{ marginBottom: '12px' }}>
+            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
+              Video muqovasi (thumbnail) — ixtiyoriy
+            </label>
+            {settings.hero_image && (
+              <img src={settings.hero_image} alt="thumbnail"
+                style={{ width: '120px', height: '80px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', display: 'block' }} />
+            )}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button onClick={() => fileRef.current?.click()}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '8px 14px', color: '#fff', fontSize: '13px', cursor: 'pointer' }}>
+                {uploading ? 'Yuklanmoqda...' : '📎 Muqova yuklash'}
+              </button>
+              {settings.hero_image && (
+                <button onClick={() => update('hero_image', '')}
+                  style={{ background: 'rgba(255,0,0,0.1)', border: '0.5px solid rgba(255,0,0,0.2)', borderRadius: '8px', padding: '8px 14px', color: '#ff6b6b', fontSize: '13px', cursor: 'pointer' }}>
+                  O'chirish
+                </button>
+              )}
+            </div>
+            <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
+              onChange={e => e.target.files[0] && uploadFile(e.target.files[0], 'bonus', 'hero_image', setUploading)} />
+          </div>
+        </Section>
+
+        {/* O'quvchi natijasi */}
         <Section title="O'quvchi natijasi">
           <Field label="Ism" keyName="student_name" />
           <Field label="Natija (masalan: 8 mln/oy)" keyName="student_result" />
           <Field label="Sarlavha (masalan: Marketing bitiruvchisi)" keyName="student_label" />
         </Section>
 
+        {/* Statistika */}
         <Section title="Statistika">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
             <Field label="1-son" keyName="stat1_number" />
@@ -273,7 +297,8 @@ export default function Admin() {
           </div>
         </Section>
 
-        <Section title="Ishonch belgilari">
+        {/* Ishonch belgilari */}
+        <Section title="Ishonch belgilari (pastki qator)">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
             <Field label="1-chi" keyName="trust1" />
             <Field label="2-chi" keyName="trust2" />
@@ -281,36 +306,14 @@ export default function Admin() {
           </div>
         </Section>
 
-        <Section title="Ranglar">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', alignItems: 'end' }}>
-            <div>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>Asosiy rang (aksent)</label>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input type="color" value={settings.primary_color || '#F5A623'}
-                  onChange={e => update('primary_color', e.target.value)}
-                  style={{ width: '40px', height: '36px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: 'none' }} />
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>{settings.primary_color}</span>
-              </div>
-            </div>
-            <div>
-              <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>Fon rangi</label>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <input type="color" value={settings.bg_color || '#0A0A0F'}
-                  onChange={e => update('bg_color', e.target.value)}
-                  style={{ width: '40px', height: '36px', borderRadius: '6px', border: 'none', cursor: 'pointer', background: 'none' }} />
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>{settings.bg_color}</span>
-              </div>
-            </div>
-          </div>
-        </Section>
-
+        {/* Sozlamalar */}
         <Section title="Sozlamalar">
           <Field label="Telegram kanal linki" keyName="telegram_channel" placeholder="https://t.me/cdsmarkazi" />
           <Field label="Admin parol" keyName="admin_password" type="password" />
         </Section>
 
         <button onClick={save} disabled={saving}
-          style={{ width: '100%', background: '#F5A623', border: 'none', borderRadius: '10px', padding: '15px', color: '#0A0A0F', fontSize: '15px', fontWeight: '500', cursor: 'pointer', opacity: saving ? 0.7 : 1, marginBottom: '40px' }}>
+          style={{ width: '100%', background: '#1E88E5', border: 'none', borderRadius: '10px', padding: '15px', color: '#fff', fontSize: '15px', fontWeight: '500', cursor: 'pointer', opacity: saving ? 0.7 : 1, marginBottom: '40px' }}>
           {saving ? 'Saqlanmoqda...' : 'Hammasini saqlash ✓'}
         </button>
       </div>
