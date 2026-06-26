@@ -402,12 +402,17 @@ export default function Landing() {
                 backdropFilter: 'blur(12px)',
                 boxShadow: '0 4px 20px rgba(0,0,0,0.35)'
               }}>
-                <div style={{
-                  width: '38px', height: '38px', borderRadius: '50%',
-                  background: 'rgba(30,136,229,0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '18px', flexShrink: 0
-                }}>👨‍💻</div>
+                {settings.student_image ? (
+  <img src={settings.student_image} alt={settings.student_name}
+    style={{ width: '42px', height: '42px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0, border: '2px solid rgba(30,136,229,0.4)' }} />
+) : (
+  <div style={{
+    width: '42px', height: '42px', borderRadius: '50%',
+    background: 'rgba(30,136,229,0.2)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: '18px', flexShrink: 0
+  }}>👨‍💻</div>
+)}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: '13px', fontWeight: '600', color: '#fff', textShadow }}>
                     {settings.student_name}

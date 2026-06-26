@@ -11,9 +11,11 @@ export default function Admin() {
   const [uploading, setUploading] = useState(false)
   const [uploadingBg, setUploadingBg] = useState(false)
   const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [uploadingStudent, setUploadingStudent] = useState(false)
   const fileRef = useRef()
   const bgFileRef = useRef()
   const logoRef = useRef()
+  const studentImgRef = useRef()
 
   useEffect(() => {
     const saved = localStorage.getItem('landing_admin')
@@ -89,8 +91,7 @@ export default function Admin() {
             <span style={{ color: '#fff', fontSize: '15px', fontWeight: '500' }}>Admin Panel</span>
           </div>
           <input
-            type="password"
-            placeholder="Parol"
+            type="password" placeholder="Parol"
             value={password}
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && login()}
@@ -167,7 +168,6 @@ export default function Admin() {
         </div>
       </div>
 
-      {/* Content */}
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '24px' }}>
 
         {/* Logo */}
@@ -280,6 +280,33 @@ export default function Admin() {
 
         {/* O'quvchi natijasi */}
         <Section title="O'quvchi natijasi">
+          {/* O'quvchi rasmi */}
+          <div style={{ marginBottom: '12px' }}>
+            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
+              O'quvchi rasmi (dumaloq ko'rinadi)
+            </label>
+            {settings.student_image && (
+              <img src={settings.student_image} alt="student"
+                style={{ width: '56px', height: '56px', borderRadius: '50%', objectFit: 'cover', marginBottom: '8px', display: 'block', border: '2px solid rgba(30,136,229,0.4)' }} />
+            )}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button onClick={() => studentImgRef.current?.click()}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '8px 14px', color: '#fff', fontSize: '13px', cursor: 'pointer' }}>
+                {uploadingStudent ? 'Yuklanmoqda...' : '👤 Rasm yuklash'}
+              </button>
+              {settings.student_image && (
+                <button onClick={() => update('student_image', '')}
+                  style={{ background: 'rgba(255,0,0,0.1)', border: '0.5px solid rgba(255,0,0,0.2)', borderRadius: '8px', padding: '8px 14px', color: '#ff6b6b', fontSize: '13px', cursor: 'pointer' }}>
+                  O'chirish
+                </button>
+              )}
+            </div>
+            <input ref={studentImgRef} type="file" accept="image/*" style={{ display: 'none' }}
+              onChange={e => e.target.files[0] && uploadFile(e.target.files[0], 'student', 'student_image', setUploadingStudent)} />
+            <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '11px', margin: '8px 0 0' }}>
+              Tavsiya: kvadrat rasm, 200x200px, PNG yoki JPG
+            </p>
+          </div>
           <Field label="Ism" keyName="student_name" />
           <Field label="Natija (masalan: 8 mln/oy)" keyName="student_result" />
           <Field label="Sarlavha (masalan: Marketing bitiruvchisi)" keyName="student_label" />
