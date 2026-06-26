@@ -9,7 +9,9 @@ export default function Admin() {
   const [authed, setAuthed] = useState(false)
   const [password, setPassword] = useState('')
   const [uploading, setUploading] = useState(false)
+  const [uploadingBg, setUploadingBg] = useState(false)
   const fileRef = useRef()
+  const bgFileRef = useRef()
 
   useEffect(() => {
     const saved = localStorage.getItem('landing_admin')
@@ -26,7 +28,7 @@ export default function Admin() {
   }
 
   const login = () => {
-    if (password === settings.admin_password) {
+    if (password === 'Admin2025!') {
       setAuthed(true)
       localStorage.setItem('landing_admin', 'true')
     } else {
@@ -54,24 +56,35 @@ export default function Admin() {
     setUploading(true)
     const ext = file.name.split('.').pop()
     const fileName = `bonus-${Date.now()}.${ext}`
-
-    const { data, error } = await supabase.storage
-      .from('landing-images')
-      .upload(fileName, file, { upsert: true })
-
+    const { error } = await supabase.storage
+      .from('landing-images').upload(fileName, file, { upsert: true })
     if (error) {
       alert('Rasm yuklashda xato: ' + error.message)
       setUploading(false)
       return
     }
-
-    const { data: urlData } = supabase.storage
-      .from('landing-images')
-      .getPublicUrl(fileName)
-
+    const { data: urlData } = supabase.storage.from('landing-images').getPublicUrl(fileName)
     update('hero_image', urlData.publicUrl)
     setUploading(false)
     setMessage('Rasm yuklandi! ✅')
+    setTimeout(() => setMessage(''), 3000)
+  }
+
+  const uploadBgImage = async (file) => {
+    setUploadingBg(true)
+    const ext = file.name.split('.').pop()
+    const fileName = `bg-${Date.now()}.${ext}`
+    const { error } = await supabase.storage
+      .from('landing-images').upload(fileName, file, { upsert: true })
+    if (error) {
+      alert('Rasm yuklashda xato: ' + error.message)
+      setUploadingBg(false)
+      return
+    }
+    const { data: urlData } = supabase.storage.from('landing-images').getPublicUrl(fileName)
+    update('bg_image', urlData.publicUrl)
+    setUploadingBg(false)
+    setMessage('Fon rasmi yuklandi! ✅')
     setTimeout(() => setMessage(''), 3000)
   }
 
@@ -196,6 +209,50 @@ export default function Admin() {
             </div>
             <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
               onChange={e => e.target.files[0] && uploadImage(e.target.files[0])} />
+          </div>
+        </Section>
+
+        {/* Fon rasmi — yangi bo'lim */}
+        <Section title="Fon rasmi (sizning rasmingiz)">
+          <div style={{ marginBottom: '12px' }}>
+            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
+              Sahifa foniga qo'yiladigan rasm (professional foto)
+            </label>
+            {settings.bg_image && (
+              <img src={settings.bg_image} alt="bg"
+                style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '8px', marginBottom: '8px', display: 'block', opacity: 0.7 }} />
+            )}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <button onClick={() => bgFileRef.current?.click()}
+                style={{ background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.15)', borderRadius: '8px', padding: '8px 14px', color: '#fff', fontSize: '13px', cursor: 'pointer' }}>
+                {uploadingBg ? 'Yuklanmoqda...' : '🖼️ Fon rasmi yuklash'}
+              </button>
+              {settings.bg_image && (
+                <button onClick={() => update('bg_image', '')}
+                  style={{ background: 'rgba(255,0,0,0.1)', border: '0.5px solid rgba(255,0,0,0.2)', borderRadius: '8px', padding: '8px 14px', color: '#ff6b6b', fontSize: '13px', cursor: 'pointer' }}>
+                  O'chirish
+                </button>
+              )}
+            </div>
+            <input ref={bgFileRef} type="file" accept="image/*" style={{ display: 'none' }}
+              onChange={e => e.target.files[0] && uploadBgImage(e.target.files[0])} />
+            <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: '11px', marginTop: '8px' }}>
+              Tavsiya: professional foto, 1200x800px yoki kattaroq
+            </p>
+          </div>
+          <div style={{ marginBottom: '12px' }}>
+            <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
+              Rasm qoralik darajasi (0 — shaffof, 1 — to'liq qora)
+            </label>
+            <input
+              type="range" min="0" max="1" step="0.1"
+              value={settings.bg_overlay || '0.6'}
+              onChange={e => update('bg_overlay', e.target.value)}
+              style={{ width: '100%' }}
+            />
+            <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
+              {settings.bg_overlay || '0.6'}
+            </span>
           </div>
         </Section>
 
