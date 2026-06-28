@@ -62,11 +62,16 @@ export default function Landing() {
     }
 
     setSubmitted(true)
-    setSubmitting(false)
+setSubmitting(false)
 
-    if (settings.telegram_channel) {
-      window.open(settings.telegram_channel, '_blank')
-    }
+// Meta Pixel — Lead event
+if (window.fbq) {
+  window.fbq('track', 'Lead')
+}
+
+if (settings.telegram_channel) {
+  window.open(settings.telegram_channel, '_blank')
+}
   }
 
   if (loading) {
