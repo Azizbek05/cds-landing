@@ -142,7 +142,7 @@ export default function Admin() {
     <div style={{ background: '#0B1929', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#fff' }}>
 
       {/* Header */}
-      <div style={{ padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.08)', position: 'sticky', top: 0, background: '#0B1929', zIndex: 10 }}>
+      <div style={{ padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.08)', background: '#0B1929' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {settings.logo_url ? (
             <img src={settings.logo_url} alt="logo" style={{ height: '28px', objectFit: 'contain' }} />
