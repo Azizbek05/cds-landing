@@ -1,6 +1,38 @@
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../lib/supabase'
 
+const Section = ({ title, children }) => (
+  <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', marginBottom: '16px' }}>
+    <h3 style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 16px' }}>{title}</h3>
+    {children}
+  </div>
+)
+
+const Field = ({ label, keyName, value, onChange, type = 'text', placeholder = '' }) => (
+  <div style={{ marginBottom: '12px' }}>
+    <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>{label}</label>
+    <input
+      type={type}
+      value={value || ''}
+      onChange={e => onChange(keyName, e.target.value)}
+      placeholder={placeholder}
+      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '16px', outline: 'none' }}
+    />
+  </div>
+)
+
+const TextArea = ({ label, keyName, value, onChange }) => (
+  <div style={{ marginBottom: '12px' }}>
+    <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>{label}</label>
+    <textarea
+      value={value || ''}
+      onChange={e => onChange(keyName, e.target.value)}
+      rows={3}
+      style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '16px', outline: 'none', resize: 'vertical' }}
+    />
+  </div>
+)
+
 export default function Admin() {
   const [settings, setSettings] = useState({})
   const [loading, setLoading] = useState(true)
@@ -107,38 +139,6 @@ export default function Admin() {
     )
   }
 
-  const Section = ({ title, children }) => (
-    <div style={{ background: 'rgba(255,255,255,0.03)', border: '0.5px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', marginBottom: '16px' }}>
-      <h3 style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: '500', textTransform: 'uppercase', letterSpacing: '0.5px', margin: '0 0 16px' }}>{title}</h3>
-      {children}
-    </div>
-  )
-
-  const Field = ({ label, keyName, type = 'text', placeholder = '' }) => (
-    <div style={{ marginBottom: '12px' }}>
-      <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>{label}</label>
-      <input
-        type={type}
-        value={settings[keyName] || ''}
-        onChange={e => update(keyName, e.target.value)}
-        placeholder={placeholder}
-        style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '16px', outline: 'none' }}
-      />
-    </div>
-  )
-
-  const TextArea = ({ label, keyName }) => (
-    <div style={{ marginBottom: '12px' }}>
-      <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>{label}</label>
-      <textarea
-        value={settings[keyName] || ''}
-        onChange={e => update(keyName, e.target.value)}
-        rows={3}
-        style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '16px', outline: 'none', resize: 'vertical' }}
-      />
-    </div>
-  )
-
   return (
     <div style={{ background: '#0B1929', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#fff' }}>
 
@@ -171,7 +171,6 @@ export default function Admin() {
 
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: '24px' }}>
 
-        {/* Logo */}
         <Section title="Logo">
           <div style={{ marginBottom: '12px' }}>
             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
@@ -201,7 +200,6 @@ export default function Admin() {
           </div>
         </Section>
 
-        {/* Fon rasm */}
         <Section title="Fon rasmi (sizning rasmingiz)">
           <div style={{ marginBottom: '12px' }}>
             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
@@ -242,18 +240,16 @@ export default function Admin() {
           </div>
         </Section>
 
-        {/* Asosiy matnlar */}
         <Section title="Asosiy matnlar">
-          <Field label="Sarlavha" keyName="hero_title" placeholder="Marketing orqali daromad qiling" />
-          <TextArea label="Tavsif matni" keyName="hero_subtitle" />
-          <Field label="CTA tugma matni" keyName="cta_button" placeholder="Bepul videoni olish" />
-          <Field label="Badge matni (tugma ustidagi)" keyName="bonus_text" placeholder="Bepul video darslik" />
+          <Field label="Sarlavha" keyName="hero_title" value={settings.hero_title} onChange={update} placeholder="Marketing orqali daromad qiling" />
+          <TextArea label="Tavsif matni" keyName="hero_subtitle" value={settings.hero_subtitle} onChange={update} />
+          <Field label="CTA tugma matni" keyName="cta_button" value={settings.cta_button} onChange={update} placeholder="Bepul videoni olish" />
+          <Field label="Badge matni" keyName="bonus_text" value={settings.bonus_text} onChange={update} placeholder="Bepul video darslik" />
         </Section>
 
-        {/* Video darslik */}
         <Section title="Bepul video darslik">
-          <Field label="Video nomi" keyName="video_title" placeholder="Marketing asoslari — 0 dan boshlab" />
-          <Field label="Video tavsifi" keyName="video_description" placeholder="Ro'yxatdan o'tganingizdan so'ng yuboriladi" />
+          <Field label="Video nomi" keyName="video_title" value={settings.video_title} onChange={update} placeholder="Marketing asoslari — 0 dan boshlab" />
+          <Field label="Video tavsifi" keyName="video_description" value={settings.video_description} onChange={update} placeholder="Ro'yxatdan o'tganingizdan so'ng yuboriladi" />
           <div style={{ marginBottom: '12px' }}>
             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
               Video muqovasi (thumbnail) — ixtiyoriy
@@ -279,7 +275,6 @@ export default function Admin() {
           </div>
         </Section>
 
-        {/* O'quvchi natijasi */}
         <Section title="O'quvchi natijasi">
           <div style={{ marginBottom: '12px' }}>
             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
@@ -307,36 +302,33 @@ export default function Admin() {
               Tavsiya: kvadrat rasm, 200x200px, PNG yoki JPG
             </p>
           </div>
-          <Field label="Ism" keyName="student_name" />
-          <Field label="Natija (masalan: 8 mln/oy)" keyName="student_result" />
-          <Field label="Sarlavha (masalan: Marketing bitiruvchisi)" keyName="student_label" />
+          <Field label="Ism" keyName="student_name" value={settings.student_name} onChange={update} />
+          <Field label="Natija (masalan: 8 mln/oy)" keyName="student_result" value={settings.student_result} onChange={update} />
+          <Field label="Sarlavha (masalan: Marketing bitiruvchisi)" keyName="student_label" value={settings.student_label} onChange={update} />
         </Section>
 
-        {/* Statistika */}
         <Section title="Statistika">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <Field label="1-son" keyName="stat1_number" />
-            <Field label="1-izoh" keyName="stat1_label" />
-            <Field label="2-son" keyName="stat2_number" />
-            <Field label="2-izoh" keyName="stat2_label" />
-            <Field label="3-son" keyName="stat3_number" />
-            <Field label="3-izoh" keyName="stat3_label" />
+            <Field label="1-son" keyName="stat1_number" value={settings.stat1_number} onChange={update} />
+            <Field label="1-izoh" keyName="stat1_label" value={settings.stat1_label} onChange={update} />
+            <Field label="2-son" keyName="stat2_number" value={settings.stat2_number} onChange={update} />
+            <Field label="2-izoh" keyName="stat2_label" value={settings.stat2_label} onChange={update} />
+            <Field label="3-son" keyName="stat3_number" value={settings.stat3_number} onChange={update} />
+            <Field label="3-izoh" keyName="stat3_label" value={settings.stat3_label} onChange={update} />
           </div>
         </Section>
 
-        {/* Ishonch belgilari */}
         <Section title="Ishonch belgilari (pastki qator)">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-            <Field label="1-chi" keyName="trust1" />
-            <Field label="2-chi" keyName="trust2" />
-            <Field label="3-chi" keyName="trust3" />
+            <Field label="1-chi" keyName="trust1" value={settings.trust1} onChange={update} />
+            <Field label="2-chi" keyName="trust2" value={settings.trust2} onChange={update} />
+            <Field label="3-chi" keyName="trust3" value={settings.trust3} onChange={update} />
           </div>
         </Section>
 
-        {/* Sozlamalar */}
         <Section title="Sozlamalar">
-          <Field label="Telegram kanal linki" keyName="telegram_channel" placeholder="https://t.me/cdsmarkazi" />
-          <Field label="Admin parol" keyName="admin_password" type="password" />
+          <Field label="Telegram kanal linki" keyName="telegram_channel" value={settings.telegram_channel} onChange={update} placeholder="https://t.me/cdsmarkazi" />
+          <Field label="Admin parol" keyName="admin_password" value={settings.admin_password} onChange={update} type="password" />
         </Section>
 
         <button onClick={save} disabled={saving}
