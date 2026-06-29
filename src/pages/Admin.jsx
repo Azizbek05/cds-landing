@@ -76,7 +76,7 @@ export default function Admin() {
 
   if (loading) {
     return (
-      <div style={{ background: '#0B1929', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ background: '#0B1929', minHeight: '100vh', fontFamily: 'system-ui, sans-serif', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '14px' }}>Yuklanmoqda...</div>
       </div>
     )
@@ -91,11 +91,12 @@ export default function Admin() {
             <span style={{ color: '#fff', fontSize: '15px', fontWeight: '500' }}>Admin Panel</span>
           </div>
           <input
-            type="password" placeholder="Parol"
+            type="password"
+            placeholder="Parol"
             value={password}
             onChange={e => setPassword(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && login()}
-            style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 16px', color: '#fff', fontSize: '14px', outline: 'none', marginBottom: '12px' }}
+            style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '12px 16px', color: '#fff', fontSize: '16px', outline: 'none', marginBottom: '12px' }}
           />
           <button onClick={login}
             style={{ width: '100%', background: '#1E88E5', border: 'none', borderRadius: '10px', padding: '13px', color: '#fff', fontSize: '14px', fontWeight: '500', cursor: 'pointer' }}>
@@ -121,7 +122,7 @@ export default function Admin() {
         value={settings[keyName] || ''}
         onChange={e => update(keyName, e.target.value)}
         placeholder={placeholder}
-        style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '13px', outline: 'none' }}
+        style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '16px', outline: 'none' }}
       />
     </div>
   )
@@ -133,7 +134,7 @@ export default function Admin() {
         value={settings[keyName] || ''}
         onChange={e => update(keyName, e.target.value)}
         rows={3}
-        style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '13px', outline: 'none', resize: 'vertical' }}
+        style={{ width: '100%', boxSizing: 'border-box', background: 'rgba(255,255,255,0.05)', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 12px', color: '#fff', fontSize: '16px', outline: 'none', resize: 'vertical' }}
       />
     </div>
   )
@@ -280,7 +281,6 @@ export default function Admin() {
 
         {/* O'quvchi natijasi */}
         <Section title="O'quvchi natijasi">
-          {/* O'quvchi rasmi */}
           <div style={{ marginBottom: '12px' }}>
             <label style={{ display: 'block', color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginBottom: '6px' }}>
               O'quvchi rasmi (dumaloq ko'rinadi)
