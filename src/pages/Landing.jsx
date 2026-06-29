@@ -379,19 +379,6 @@ if (settings.telegram_channel) {
                       ? 'Yuborilmoqda...'
                       : (settings.cta_button || 'Bepul videoni olish') + ' →'}
                   </button>
-
-                  <div style={{
-                    display: 'flex', alignItems: 'center',
-                    justifyContent: 'center', gap: '12px'
-                  }}>
-                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', margin: 0, textShadow }}>
-                      Spam yubormaymiz
-                    </p>
-                    <span style={{ color: 'rgba(255,255,255,0.3)' }}>·</span>
-                    <p style={{ color: primaryLight, fontSize: '11px', margin: 0, textShadow }}>
-                      500+ kishi oldi
-                    </p>
-                  </div>
                 </div>
               )}
             </div>
